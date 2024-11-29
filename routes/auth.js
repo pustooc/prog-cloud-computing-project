@@ -14,10 +14,16 @@ router.post('/register', async(request, response) => {
         return response.status(400).send({message: error['details'][0]['message']});
     }
 
-    // Validation 2 to check if user exists
-    const userExists = await User.findOne({email: request.body.email});
-    if (userExists) {
-        return response.status(400).send({message: 'User already exists'});
+    // Validation 2 to check if email exists
+    const emailExists = await User.findOne({email: request.body.email});
+    if (emailExists) {
+        return response.status(400).send({message: 'Email already exists'});
+    }
+
+    // Validation 3 to check if username exists
+    const usernameExists = await User.findOne({username: request.body.username});
+    if (usernameExists) {
+        return response.status(400).send({message: 'Username already exists'});
     }
 
     // Create a hashed representation of password
