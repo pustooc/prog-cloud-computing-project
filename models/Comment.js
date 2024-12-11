@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const interactionSchema = mongoose.Schema({
+const commentSchema = mongoose.Schema({
     message_id: {
         type: String,
         require: true
@@ -11,15 +11,16 @@ const interactionSchema = mongoose.Schema({
         min: 3,
         max: 256
     },
-    type: {
+    body: {
         type: String,
         require: true,
-        enum: ['like', 'dislike'],
-        message: 'Invalid interaction type'
+        min: 1,
+        max: 256
     },
     time_until_expiration: {
-        type: Number
+        type: Number,
+        require: true
     }
 });
 
-module.exports = mongoose.model('interactions', interactionSchema);
+module.exports = mongoose.model('comments', commentSchema);

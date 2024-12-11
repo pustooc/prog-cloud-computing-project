@@ -1,5 +1,6 @@
 const express = require('express');
 
+const Comment = require('../models/Comment');
 const Interaction = require('../models/Interaction');
 const Message = require('../models/Message');
 const verifyToken = require('../verifyToken');
@@ -26,9 +27,8 @@ router.post('/', verifyToken, async(request, response) => {
 });
 
 async function getCommentsForOneMessage(id) {
-    const comments = await Interaction.find({
-        message_id: id,
-        type: 'comment'
+    const comments = await Comment.find({
+        message_id: id
     });
     return comments;
 };
