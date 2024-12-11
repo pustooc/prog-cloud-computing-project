@@ -65,6 +65,11 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
         return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
     }
 
+    // Add validation to check if message status is Expired
+    if (Date.now() > message['expire_at']) {
+        return response.status(400).send({message: 'The message has Expired'});
+    }
+
     const interactionData = new Interaction({
         message_id: request.params.messageId,
         owner: request.body.owner,
@@ -105,6 +110,11 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
         return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
     }
 
+    // Validation to check if message status is Expired
+    if (Date.now() > message['expire_at']) {
+        return response.status(400).send({message: 'The message has Expired'});
+    }
+
     const interactionData = new Interaction({
         message_id: request.params.messageId,
         owner: request.body.owner,
@@ -131,6 +141,11 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
 router.post('/:messageId/comment', verifyToken, async(request, response) => {
     const message = await Message.findById(request.params.messageId);
 
+    // Validation to check if message status is Expired
+    if (Date.now() > message['expire_at']) {
+        return response.status(400).send({message: 'The message has Expired'});
+    }
+
     const commentData = new Comment({
         message_id: request.params.messageId,
         owner: request.body.owner,
@@ -144,6 +159,24 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
         response.send(commentToSave);
     } catch(err) {
         response.send({message: err});
+    }
+});
+
+router.get('/expired/:topic', verifyToken, async(request, response) => {
+    try {
+        const messages = await Message.find({
+            topic: request.params.topic,
+            expire_at: {$lt: now}
+        });
+        messages.forEach((message) => {
+            // Determine message status here as it is not an attribute in the model
+            message['status'] = 'Expired';
+            // Get comments that are linked to the message
+            message['comments'] = getCommentsForOneMessage(message['_id']);
+        });
+        response.send(messages);
+    } catch(err) {
+        response.status(400).send({message: err});
     }
 });
 
