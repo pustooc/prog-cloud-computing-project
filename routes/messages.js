@@ -128,4 +128,23 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
     }
 });
 
+router.post('/:messageId/comment', verifyToken, async(request, response) => {
+    const message = await Message.findById(request.params.messageId);
+
+    const commentData = new Comment({
+        message_id: request.params.messageId,
+        owner: request.body.owner,
+        body: request.body.body,
+        time_until_expiration: message['expire_at'] - Date.now()
+    });
+
+    // Try to insert
+    try {
+        const commentToSave = await commentData.save();
+        response.send(commentToSave);
+    } catch(err) {
+        response.send({message: err});
+    }
+});
+
 module.exports = router;
