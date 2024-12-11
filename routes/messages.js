@@ -48,4 +48,29 @@ router.get('/', verifyToken, async(request, response) => {
     }
 });
 
+router.post('/:messageId/like', verifyToken, async(request, response) => {
+    const message = await Message.findById(request.params.messageId);
+
+    const interactionData = new Interaction({
+        message_id: request.params.messageId,
+        owner: request.body.owner,
+        type: 'like',
+        time_until_expiration: message['expire_at'] - Date.now()
+    });
+
+    // Try to insert
+    try {
+        const interactionToSave = await interactionData.save();
+        const updateMessageById = await Message.updateOne(
+            {_id: request.params.messageId},
+            {$set: {
+                likes: message['likes'] + 1
+            }}
+        );
+        response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
+    } catch(err) {
+        response.send({message: err});
+    }
+});
+
 module.exports = router;
