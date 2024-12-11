@@ -87,4 +87,43 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
     }
 });
 
+router.post('/:messageId/dislike', verifyToken, async(request, response) => {
+    const message = await Message.findById(request.params.messageId);
+
+    // Validation to check if the user is liking/disliking her own message
+    if (message['owner'] === request.body.owner) {
+        return response.status(400).send({message: 'User cannot like/dislike his own message'});
+    }
+
+    // Validation to check if the user has already liked/disliked the message
+    const interactionExists = await Interaction.findOne({
+        message_id: request.params.messageId,
+        owner: request.body.owner
+    });
+    if (interactionExists) {
+        return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
+    }
+
+    const interactionData = new Interaction({
+        message_id: request.params.messageId,
+        owner: request.body.owner,
+        type: 'dislike',
+        time_until_expiration: message['expire_at'] - Date.now()
+    });
+
+    // Try to insert
+    try {
+        const interactionToSave = await interactionData.save();
+        const updateMessageById = await Message.updateOne(
+            {_id: request.params.messageId},
+            {$set: {
+                likes: message['dislikes'] + 1
+            }}
+        );
+        response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
+    } catch(err) {
+        response.send({message: err});
+    }
+});
+
 module.exports = router;
