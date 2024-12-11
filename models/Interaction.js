@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const interactionSchema = mongoose.Schema({
-    post_id: {
+    message_id: {
         type: String,
         require: true
     },
