@@ -75,6 +75,7 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
     // Try to insert
     try {
         const interactionToSave = await interactionData.save();
+        // Also increase interaction count of the message
         const updateMessageById = await Message.updateOne(
             {_id: request.params.messageId},
             {$set: {
@@ -114,6 +115,7 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
     // Try to insert
     try {
         const interactionToSave = await interactionData.save();
+        // Also increase interaction count of the message
         const updateMessageById = await Message.updateOne(
             {_id: request.params.messageId},
             {$set: {
