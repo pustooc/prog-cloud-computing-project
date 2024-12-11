@@ -180,4 +180,18 @@ router.get('/expired/:topic', verifyToken, async(request, response) => {
     }
 });
 
+router.get('/highest-interest', verifyToken, async(request, response) => {
+    try {
+        const highestInterestMessage = await Message.aggregate([
+            {$match : {expire_at: {$gt: Date.now()}}},
+            {$addFields: {sumLikesDislikes: {$sum: ['$likes', '$dislikes']}}},
+            {$sort: {sumLikesDislikes: -1}},
+            {$limit: 1}
+        ]);
+        response.send(highestInterestMessage);
+    } catch(err) {
+        response.status(400).send({message: err});
+    }
+});
+
 module.exports = router;
