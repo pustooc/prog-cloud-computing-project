@@ -4,10 +4,17 @@ const Comment = require('../models/Comment');
 const Interaction = require('../models/Interaction');
 const Message = require('../models/Message');
 const verifyToken = require('../verifyToken');
+const {commentValidation, messageValidation} = require('../utils/validation');
 
 const router = express.Router();
 
 router.post('/:topic', verifyToken, async(request, response) => {
+    // Validation to check user input
+    const {error} = messageValidation(request.body);
+    if (error) {
+        return response.status(400).send({message: error['details'][0]['message']});
+    }
+
     const messageData = new Message({
         title: request.body.title,
         topic: request.params.topic,
@@ -146,6 +153,12 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
 });
 
 router.post('/:messageId/comment', verifyToken, async(request, response) => {
+    // Validation to check user input
+    const {error} = commentValidation(request.body);
+    if (error) {
+        return response.status(400).send({message: error['details'][0]['message']});
+    }
+
     const message = await Message.findById(request.params.messageId);
 
     // Validation to check if message status is Expired
@@ -163,7 +176,7 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
     // Try to insert
     try {
         const commentToSave = await commentData.save();
-        
+
         response.send(commentToSave);
     } catch(err) {
         response.send({message: err});
