@@ -30,20 +30,23 @@ async function getCommentsForOneMessage(id) {
     const comments = await Comment.find({
         message_id: id
     });
+
     return comments;
 };
 
 router.get('/:topic', verifyToken, async(request, response) => {
     try {
+        // Get messages filtered by topic
         const messages = await Message.find({
             topic: request.params.topic
         });
+        
+        // Set properties that are not already attributes in the Message model
         messages.forEach((message) => {
-            // Determine message status here as it is not an attribute in the model
             message['status'] = Date.now() < message['expire_at'] ? 'Live' : 'Expired';
-            // Get comments that are linked to the message
             message['comments'] = getCommentsForOneMessage(message['_id']);
         });
+
         response.send(messages);
     } catch(err) {
         response.status(400).send({message: err});
@@ -67,7 +70,7 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
         return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
     }
 
-    // Add validation to check if message status is Expired
+    // Validation to check if message status is Expired
     if (Date.now() > message['expire_at']) {
         return response.status(400).send({message: 'The message has Expired'});
     }
@@ -89,6 +92,7 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
                 likes: message['likes'] + 1
             }}
         );
+
         response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
     } catch(err) {
         response.send({message: err});
@@ -134,6 +138,7 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
                 likes: message['dislikes'] + 1
             }}
         );
+
         response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
     } catch(err) {
         response.send({message: err});
@@ -158,6 +163,7 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
     // Try to insert
     try {
         const commentToSave = await commentData.save();
+        
         response.send(commentToSave);
     } catch(err) {
         response.send({message: err});
@@ -166,16 +172,18 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
 
 router.get('/:topic/expired', verifyToken, async(request, response) => {
     try {
+        // Get messages filtered by topic and Expired status
         const messages = await Message.find({
             topic: request.params.topic,
             expire_at: {$lt: now}
         });
+
+        // Set properties that are not already attributes in the Message model
         messages.forEach((message) => {
-            // Determine message status here as it is not an attribute in the model
             message['status'] = 'Expired';
-            // Get comments that are linked to the message
             message['comments'] = getCommentsForOneMessage(message['_id']);
         });
+
         response.send(messages);
     } catch(err) {
         response.status(400).send({message: err});
@@ -184,6 +192,7 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
 
 router.get('/:topic/highest-interest', verifyToken, async(request, response) => {
     try {
+        // Get a message filtered by topic, Live status, and highest total likes and dislikes
         const message = await Message.aggregate([
             {$match : {
                 topic: request.params.topic,
@@ -193,8 +202,11 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
             {$sort: {sumLikesDislikes: -1}},
             {$limit: 1}
         ]);
+
+        // Set properties that are not already attributes in the Message model
         message['status'] = 'Live';
         message['comments'] = getCommentsForOneMessage(message['_id']);
+
         response.send(message);
     } catch(err) {
         response.status(400).send({message: err});
