@@ -164,7 +164,7 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
     }
 });
 
-router.get('/expired/:topic', verifyToken, async(request, response) => {
+router.get('/:topic/expired', verifyToken, async(request, response) => {
     try {
         const messages = await Message.find({
             topic: request.params.topic,
