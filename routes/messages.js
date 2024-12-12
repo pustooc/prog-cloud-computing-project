@@ -33,9 +33,11 @@ async function getCommentsForOneMessage(id) {
     return comments;
 };
 
-router.get('/', verifyToken, async(request, response) => {
+router.get('/:topic', verifyToken, async(request, response) => {
     try {
-        const messages = await Message.find();
+        const messages = await Message.find({
+            topic: request.params.topic
+        });
         messages.forEach((message) => {
             // Determine message status here as it is not an attribute in the model
             message['status'] = Date.now() < message['expire_at'] ? 'Live' : 'Expired';
