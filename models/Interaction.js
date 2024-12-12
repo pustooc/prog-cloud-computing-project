@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const interactionSchema = mongoose.Schema({
     message_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Message',
+        ref: 'messages',
         require: true
     },
     owner: {

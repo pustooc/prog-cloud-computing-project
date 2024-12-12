@@ -48,9 +48,10 @@ const messageSchema = mongoose.Schema({
     }
 });
 
-// Make frequent queries to comments easier
+// Always read comments linked to a message's _id, as comments are always
+// displayed when reading messages
 messageSchema.virtual('comments', {
-    ref: 'Comment',
+    ref: 'comments',
     localField: '_id',
     foreignField: 'message_id'
 });
