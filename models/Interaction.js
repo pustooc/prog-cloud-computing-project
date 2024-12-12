@@ -23,4 +23,7 @@ const interactionSchema = mongoose.Schema({
     }
 });
 
+// Unique constraint for message_id and owner as a group
+interactionSchema.index({message_id: 1, owner: 1}, {unique: true});
+
 module.exports = mongoose.model('interactions', interactionSchema);
