@@ -48,4 +48,13 @@ const messageSchema = mongoose.Schema({
     }
 });
 
+// Make frequent queries to comments easier
+messageSchema.virtual('comments', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'message_id'
+});
+messageSchema.set('toObject', {virtuals: true});
+messageSchema.set('toJSON', {virtuals: true});
+
 module.exports = mongoose.model('messages', messageSchema);

@@ -46,12 +46,13 @@ router.get('/:topic', verifyToken, async(request, response) => {
         // Get messages filtered by topic
         const messages = await Message.find({
             topic: request.params.topic
-        });
+        })
+        .populate('comments');
         
         // Set properties that are not already attributes in the Message model
         messages.forEach((message) => {
             message['status'] = Date.now() < message['expire_at'] ? 'Live' : 'Expired';
-            message['comments'] = getCommentsForOneMessage(message['_id']);
+            //message['comments'] = getCommentsForOneMessage(message['_id']);
         });
 
         response.send(messages);
@@ -186,12 +187,13 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
         const messages = await Message.find({
             topic: request.params.topic,
             expire_at: {$lt: now}
-        });
+        })
+        .populate('comments');;
 
         // Set properties that are not already attributes in the Message model
         messages.forEach((message) => {
             message['status'] = 'Expired';
-            message['comments'] = getCommentsForOneMessage(message['_id']);
+            //message['comments'] = getCommentsForOneMessage(message['_id']);
         });
 
         response.send(messages);
@@ -211,11 +213,12 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
             {$addFields: {sumLikesDislikes: {$sum: ['$likes', '$dislikes']}}},
             {$sort: {sumLikesDislikes: -1}},
             {$limit: 1}
-        ]);
+        ])
+        .populate('comments');
 
         // Set properties that are not already attributes in the Message model
         message['status'] = 'Live';
-        message['comments'] = getCommentsForOneMessage(message['_id']);
+        //message['comments'] = getCommentsForOneMessage(message['_id']);
 
         response.send(message);
     } catch(err) {
