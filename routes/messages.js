@@ -3,7 +3,7 @@ const express = require('express');
 const Comment = require('../models/Comment');
 const Interaction = require('../models/Interaction');
 const Message = require('../models/Message');
-const verifyToken = require('../verifyToken');
+const verifyToken = require('../utils/verifyToken');
 const {commentValidation, messageValidation} = require('../utils/validation');
 
 const router = express.Router();
