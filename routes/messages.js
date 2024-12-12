@@ -184,7 +184,7 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
 
 router.get('/:topic/highest-interest', verifyToken, async(request, response) => {
     try {
-        const highestInterestMessage = await Message.aggregate([
+        const message = await Message.aggregate([
             {$match : {
                 topic: request.params.topic,
                 expire_at: {$gt: Date.now()}
@@ -193,7 +193,9 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
             {$sort: {sumLikesDislikes: -1}},
             {$limit: 1}
         ]);
-        response.send(highestInterestMessage);
+        message['status'] = 'Live';
+        message['comments'] = getCommentsForOneMessage(message['_id']);
+        response.send(message);
     } catch(err) {
         response.status(400).send({message: err});
     }
