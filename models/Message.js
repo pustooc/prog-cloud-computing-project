@@ -8,12 +8,12 @@ const messageSchema = mongoose.Schema({
         max: 256
     },
     topic: {
-        type: [String],
+        type: String,
         require: true,
         validate: {
-            validator: function(values) {
-                const allowedValues = ['Politics', 'Health', 'Sport', 'tech'];
-                return values.every(value => allowedValues.includes(value));
+            validator: function(value) {
+                const allowedValues = ['Politics', 'Health', 'Sport', 'Tech'];
+                return allowedValues.includes(value);
             },
             message: properties => `Invalid topic(s) detected: ${properties.value}`
         }
