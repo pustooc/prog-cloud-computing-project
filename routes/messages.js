@@ -68,6 +68,11 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
         return response.status(400).send({message: 'User cannot like/dislike his own message'});
     }
 
+    // Validation to check if message status is Expired
+    if (Date.now() > message['expire_at']) {
+        return response.status(400).send({message: 'The message has Expired'});
+    }
+
     // Validation to check if the user has already liked/disliked the message
     const interactionExists = await Interaction.findOne({
         message_id: request.params.messageId,
@@ -75,11 +80,6 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
     });
     if (interactionExists) {
         return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
-    }
-
-    // Validation to check if message status is Expired
-    if (Date.now() > message['expire_at']) {
-        return response.status(400).send({message: 'The message has Expired'});
     }
 
     const interactionData = new Interaction({
@@ -99,7 +99,6 @@ router.post('/:messageId/like', verifyToken, async(request, response) => {
                 likes: message['likes'] + 1
             }}
         );
-
         response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
     } catch(err) {
         response.send({message: err});
@@ -114,6 +113,11 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
         return response.status(400).send({message: 'User cannot like/dislike his own message'});
     }
 
+    // Validation to check if message status is Expired
+    if (Date.now() > message['expire_at']) {
+        return response.status(400).send({message: 'The message has Expired'});
+    }
+
     // Validation to check if the user has already liked/disliked the message
     const interactionExists = await Interaction.findOne({
         message_id: request.params.messageId,
@@ -121,11 +125,6 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
     });
     if (interactionExists) {
         return response.status(400).send({message: 'User cannot like/dislike a message multiple times'});
-    }
-
-    // Validation to check if message status is Expired
-    if (Date.now() > message['expire_at']) {
-        return response.status(400).send({message: 'The message has Expired'});
     }
 
     const interactionData = new Interaction({
@@ -145,7 +144,6 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
                 likes: message['dislikes'] + 1
             }}
         );
-
         response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
     } catch(err) {
         response.send({message: err});
@@ -176,7 +174,6 @@ router.post('/:messageId/comment', verifyToken, async(request, response) => {
     // Try to insert
     try {
         const commentToSave = await commentData.save();
-
         response.send(commentToSave);
     } catch(err) {
         response.send({message: err});
