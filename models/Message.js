@@ -9,7 +9,14 @@ const messageSchema = mongoose.Schema({
     },
     topic: {
         type: String,
-        require: true
+        require: true,
+        validate: {
+            validator: function(value) {
+                const allowedValues = ['Politics', 'Health', 'Sport', 'Tech'];
+                return allowedValues.includes(value);
+            },
+            message: properties => `Invalid topic(s) detected: ${properties.value}`
+        }
     },
     posted_at: {
         type: Date,
