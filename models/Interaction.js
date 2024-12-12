@@ -18,7 +18,8 @@ const interactionSchema = mongoose.Schema({
         message: 'Invalid interaction type'
     },
     time_until_expiration: {
-        type: Number
+        type: Number,
+        require: true
     }
 });
 
