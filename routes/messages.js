@@ -7,10 +7,10 @@ const verifyToken = require('../verifyToken');
 
 const router = express.Router();
 
-router.post('/', verifyToken, async(request, response) => {
+router.post('/:topic', verifyToken, async(request, response) => {
     const messageData = new Message({
         title: request.body.title,
-        topic: request.body.topic,
+        topic: request.params.topic,
         body: request.body.body,
         owner: request.body.owner,
         likes: 0,
