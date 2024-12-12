@@ -30,7 +30,7 @@ const messageSchema = mongoose.Schema({
     },
     expire_at: {
         type: Date,
-        default: Date.now() + 1000*60*10 // Add 10 mins
+        default: Date.now() + 1000*60*60*12 // Add 12 hours
     },
     owner: {
         type: String,
