@@ -33,14 +33,6 @@ router.post('/:topic', verifyToken, async(request, response) => {
     }
 });
 
-async function getCommentsForOneMessage(id) {
-    const comments = await Comment.find({
-        message_id: id
-    });
-
-    return comments;
-};
-
 router.get('/:topic', verifyToken, async(request, response) => {
     try {
         // Get messages filtered by topic
@@ -198,7 +190,7 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
             return messageObject;
         });
 
-        response.send(messages);
+        response.send(messagesWithStatus);
     } catch(err) {
         response.status(400).send({message: err});
     }
