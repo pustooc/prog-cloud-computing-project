@@ -142,7 +142,7 @@ router.post('/:messageId/dislike', verifyToken, async(request, response) => {
         const updateMessageById = await Message.updateOne(
             {_id: request.params.messageId},
             {$set: {
-                likes: message['dislikes'] + 1
+                dislikes: message['dislikes'] + 1
             }}
         );
         response.send({saved_interaction: interactionToSave, updated_message: updateMessageById});
