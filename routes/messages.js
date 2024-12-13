@@ -179,7 +179,7 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
         // Get messages filtered by topic and Expired status
         const messages = await Message.find({
             topic: request.params.topic,
-            expire_at: {$lt: now}
+            expire_at: {$lt: Date.now()}
         })
         .populate('comments');;
 
