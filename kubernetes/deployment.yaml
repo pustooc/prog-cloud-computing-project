@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piazza-deployment
+  labels:
+    app: piazza
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: piazza
+  template:
+    metadata:
+      labels:
+        app: piazza
+    spec:
+      containers:
+      - name: piazza-container
+        image: lustinau/piazza-image:1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
