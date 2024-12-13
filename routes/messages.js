@@ -50,12 +50,13 @@ router.get('/:topic', verifyToken, async(request, response) => {
         .populate('comments');
         
         // Set properties that are not already attributes in the Message model
-        messages.forEach((message) => {
-            message['status'] = Date.now() < message['expire_at'] ? 'Live' : 'Expired';
-            //message['comments'] = getCommentsForOneMessage(message['_id']);
+        const messagesWithStatus = messages.map(message => {
+            const messageObject = message.toObject();
+            messageObject['status'] = Date.now() < message['expire_at'] ? 'Live' : 'Expired';
+            return messageObject;
         });
 
-        response.send(messages);
+        response.send(messagesWithStatus);
     } catch(err) {
         response.status(400).send({message: err});
     }
@@ -191,9 +192,10 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
         .populate('comments');;
 
         // Set properties that are not already attributes in the Message model
-        messages.forEach((message) => {
-            message['status'] = 'Expired';
-            //message['comments'] = getCommentsForOneMessage(message['_id']);
+        const messagesWithStatus = messages.map(message => {
+            const messageObject = message.toObject();
+            messageObject['status'] = 'Expired';
+            return messageObject;
         });
 
         response.send(messages);
@@ -217,10 +219,10 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
         .populate('comments');
 
         // Set properties that are not already attributes in the Message model
-        message['status'] = 'Live';
-        //message['comments'] = getCommentsForOneMessage(message['_id']);
+        const messageWithStatus = message.toObject();
+        messageWithStatus['status'] = 'Live';
 
-        response.send(message);
+        response.send(messageWithStatus);
     } catch(err) {
         response.status(400).send({message: err});
     }
