@@ -4,7 +4,7 @@ RUN apk add --no-cache \
 bash \
 curl \
 build-base \
-nodejs=19.1.0-r0 \
+nodejs \
 npm
 RUN npm install -g npm@8.19.3
 COPY . .
