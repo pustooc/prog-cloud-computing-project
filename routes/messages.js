@@ -208,11 +208,10 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
             {$sort: {total_interest: -1}},
             {$limit: 1}
         ]);
+        // Separately populate as aggregate().populate() chaining doesn't work
+        const populatedMessages = await Message.populate(messages, {path: 'comments'});
 
-
-        //.populate('comments');
-
-        response.send(messages);
+        response.send(populatedMessages);
 
         // // Set properties that are not already attributes in the Message model
         // const messageWithStatus = messages[0].toObject();
