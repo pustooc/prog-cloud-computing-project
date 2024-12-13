@@ -215,6 +215,7 @@ router.get('/:topic/highest-interest', verifyToken, async(request, response) => 
         // Set properties that are not already attributes in the Message model
         const messageWithStatus = populatedMessages[0];
         messageWithStatus['status'] = 'Live';
+        
         response.send(messageWithStatus);
     } catch(err) {
         response.status(400).send({message: err});
