@@ -28,7 +28,8 @@ const messageValidation = (data) => {
 
 const commentValidation = (data) => {
     const schemaValidation = joi.object({
-        body: joi.string().required().min(1).max(256)
+        body: joi.string().required().min(1).max(256),
+        owner: joi.string().required().min(3).max(256)
     });
     return schemaValidation.validate(data);
 };
