@@ -48,6 +48,9 @@ const messageSchema = mongoose.Schema({
     }
 });
 
+// Doesn't work - perhaps an issue with Date.now(). Future work
+// messageSchema.virtual('status').get(() => Date.now() < this.expire_at ? 'Live' : 'Expired');
+
 // Always read comments linked to a message's _id, as comments are always
 // displayed when reading messages
 messageSchema.virtual('comments', {
