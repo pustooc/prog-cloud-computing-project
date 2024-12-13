@@ -7,8 +7,8 @@ build-base \
 nodejs \
 npm
 RUN npm install -g npm@8.19.3
+WORKDIR /src
 COPY . .
-WORKDIR .
 RUN npm install
 EXPOSE 3000
 CMD ["npm", "start"]
