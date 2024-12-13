@@ -199,22 +199,26 @@ router.get('/:topic/expired', verifyToken, async(request, response) => {
 router.get('/:topic/highest-interest', verifyToken, async(request, response) => {
     try {
         // Get a message filtered by topic, Live status, and highest total likes and dislikes
-        const message = await Message.aggregate([
+        const messages = await Message.aggregate([
             {$match : {
                 topic: request.params.topic,
-                expire_at: {$gt: Date.now()}
+                expire_at: {$gt: new Date()}
             }},
-            {$addFields: {sumLikesDislikes: {$sum: ['$likes', '$dislikes']}}},
-            {$sort: {sumLikesDislikes: -1}},
+            {$addFields: {total_interest: {$add: ['$likes', '$dislikes']}}},
+            {$sort: {total_interest: -1}},
             {$limit: 1}
-        ])
-        .populate('comments');
+        ]);
 
-        // Set properties that are not already attributes in the Message model
-        const messageWithStatus = message.toObject();
-        messageWithStatus['status'] = 'Live';
 
-        response.send(messageWithStatus);
+        //.populate('comments');
+
+        response.send(messages);
+
+        // // Set properties that are not already attributes in the Message model
+        // const messageWithStatus = messages[0].toObject();
+        // messageWithStatus['status'] = 'Live';
+
+        // response.send(messageWithStatus);
     } catch(err) {
         response.status(400).send({message: err});
     }
