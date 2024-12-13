@@ -1,7 +1,10 @@
 FROM alpine
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN nvm install 19.1.0
-RUN npm install -g npm@8.19.3
+RUN apk update && apk add --no-cache \
+bash \
+curl \
+build-base
+RUN curl -sL https://deb.nodesource.com/setup_19.x | bash - && \
+apk add --no-cache nodejs=19.1.0-r0 npm=8.19.3-r0
 COPY . .
 WORKDIR .
 RUN npm install
